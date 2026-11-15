@@ -1,0 +1,59 @@
+# Deterministic checks on every push and PR. No API key needed, so this always runs.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      - name: Unit tests (send-guard, linter + mutations, leads, review gate, project wiring)
+        run: npm test
+      - name: Lint every campaign email
+        run: npm run lint
+      - name: Bad sample must fail the linter
+        shell: bash
+        run: |
+          if node studio-kit/scripts/lint-emails.mjs review/samples/bad-email.md; then
+            echo "::error::the linter passed a deliberately bad email"; exit 1
+          fi
+
+  plugin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      - run: npm i -g @anthropic-ai/claude-code
+      - name: Validate plugin and marketplace manifests
+        run: |
+          claude plugin validate ./studio-kit
+          claude plugin validate .
+
+  practice-send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      - name: Start the local Resend emulator
+        run: |
+          npx -y emulate@0.13.1 start --service resend > emulator.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf localhost:4000/emails -H 'Authorization: Bearer re_practice_local_only' >/dev/null && break; sleep 1; done
+      - name: Practice launch to the test inbox, verified on the emulator
+        run: npm run send:launch

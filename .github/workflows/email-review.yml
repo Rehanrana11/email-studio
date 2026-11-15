@@ -1,0 +1,55 @@
+# LLM-judge review of changed emails on PRs. Needs an ANTHROPIC_API_KEY repo secret.
+# Without the secret the job says so loudly and stops; it does not pretend the review passed.
+name: email-review
+
+on:
+  pull_request:
+    paths:
+      - "campaigns/**/emails/**"
+      - "campaigns/**/personalized/**"
+      - "brand/voice.md"
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+      - name: Check for the API key
+        id: key
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::warning::ANTHROPIC_API_KEY is not set. LLM review did NOT run. The deterministic ci workflow still gates this PR."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.key.outputs.present == 'true'
+        run: npm i -g @anthropic-ai/claude-code
+      - name: Review changed emails (fails on blocking lint or any high judge finding)
+        if: steps.key.outputs.present == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          files=$(git diff --name-only --diff-filter=AM "$BASE_SHA"...HEAD -- 'campaigns/**/emails/*.md' 'campaigns/**/personalized/*/*.md')
+          if [ "$(git diff --name-only "$BASE_SHA"...HEAD -- brand/voice.md)" != "" ]; then
+            files=$(ls campaigns/*/emails/*.md campaigns/*/personalized/*/*.md)   # voice changed: re-review everything
+          fi
+          status=0
+          for f in $files; do
+            echo "::group::$f"
+            node studio-kit/scripts/review.mjs "$f" || status=$?
+            echo "::endgroup::"
+          done
+          exit $status

@@ -1,0 +1,21 @@
+{
+  "name": "clove-copper-email-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A practice-only email marketing studio built with Claude Code: guarded sends, a deterministic linter, and a calibrated LLM judge.",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test \"tests/*.test.mjs\"",
+    "lint": "node studio-kit/scripts/lint-emails.mjs",
+    "review": "node studio-kit/scripts/review.mjs",
+    "calibrate": "node scripts/calibrate-judge.mjs",
+    "emulator": "npx -y emulate@0.13.1 start --service resend",
+    "send:launch": "node scripts/send-launch.mjs",
+    "send:dry": "node scripts/send-launch.mjs --dry-run",
+    "gen:reviews": "node scripts/gen-reviews.mjs",
+    "analyze:reviews": "node scripts/analyze-reviews.mjs",
+    "check": "npm test && npm run lint"
+  }
+}

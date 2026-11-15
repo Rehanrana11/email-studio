@@ -1,0 +1,12 @@
+{"case": "g01-implied-gut-health.md", "label": "fail", "why": "implied health claim without a banned word", "labeled_by": "seed-draft"}
+{"case": "g02-implied-inflammation.md", "label": "fail", "why": "implied anti-inflammatory claim", "labeled_by": "seed-draft"}
+{"case": "g03-soft-scarcity.md", "label": "fail", "why": "fake scarcity without banned words", "labeled_by": "seed-draft"}
+{"case": "g04-guilt-pressure.md", "label": "fail", "why": "guilt pressure, off-voice", "labeled_by": "seed-draft"}
+{"case": "g05-second-cta.md", "label": "fail", "why": "second call to action", "labeled_by": "seed-draft"}
+{"case": "g06-wrong-offer.md", "label": "fail", "why": "offer facts not in the plan", "labeled_by": "seed-draft"}
+{"case": "g07-clean-skip.md", "label": "pass", "why": "unchanged base copy", "labeled_by": "seed-draft"}
+{"case": "g08-clean-recipe.md", "label": "pass", "why": "specific, on-voice", "labeled_by": "seed-draft"}
+{"case": "g09-clean-sizzle.md", "label": "pass", "why": "sensory, on-voice", "labeled_by": "seed-draft"}
+{"case": "g10-clean-gift.md", "label": "pass", "why": "practical, no pressure", "labeled_by": "seed-draft"}
+{"case": "g11-clean-origin.md", "label": "pass", "why": "specific detail, no claim", "labeled_by": "seed-draft"}
+{"case": "g12-borderline-cosy.md", "label": "pass", "why": "emotional, not a health claim", "labeled_by": "seed-draft"}

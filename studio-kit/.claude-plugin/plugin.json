@@ -1,0 +1,8 @@
+{
+  "name": "studio-kit",
+  "version": "1.0.0",
+  "description": "Brand-agnostic guardrails for an email marketing studio: a default-deny send-guard hook, a deterministic email linter, a calibrated LLM-judge review script, an email-reviewer subagent and a personalize skill.",
+  "author": { "name": "Rehan Masood" },
+  "license": "MIT",
+  "hooks": "./hooks/hooks.json"
+}

@@ -1,0 +1,4 @@
+{
+  "note": "Each waiver suppresses ONE judge finding id in ONE file, only while the offending text is unchanged (sha256 of the finding's `before`, trimmed), and only until `expires`. health-claim, fake-urgency and misleading-subject findings can never be waived. Get the sha with: node -e \"console.log(require('crypto').createHash('sha256').update(process.argv[1].trim()).digest('hex'))\" \"<before text>\"",
+  "waivers": []
+}

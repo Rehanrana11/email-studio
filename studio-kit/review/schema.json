@@ -1,0 +1,32 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "overall": { "type": "string", "enum": ["pass", "fail"] },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "description": "stable kebab-case slug, category first, e.g. 'health-claim-detox', 'tone-pushy', 'subject-vague'"
+          },
+          "severity": { "type": "string", "enum": ["high", "medium", "low"] },
+          "category": {
+            "type": "string",
+            "enum": ["health-claim", "fake-urgency", "misleading-subject", "cta", "offer-facts", "voice", "clarity", "structure", "compliance", "other"]
+          },
+          "rule": { "type": "string", "description": "which brand-voice or email rule is broken" },
+          "location": { "type": "string", "description": "subject, preview, body paragraph N, CTA or footer" },
+          "before": { "type": "string", "description": "the exact offending text, copied verbatim from the email" },
+          "after": { "type": "string", "description": "a suggested rewrite in the brand voice" }
+        },
+        "required": ["id", "severity", "category", "rule", "location", "before", "after"]
+      }
+    }
+  },
+  "required": ["overall", "findings"]
+}

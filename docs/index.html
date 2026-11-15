@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clove & Copper Email Studio · guarded sends, linted copy, a measured LLM judge</title>
+<meta name="description" content="A practice-only email marketing studio built with Claude Code: default-deny send guard, deterministic linter with mutation tests, and a calibrated LLM judge.">
+<style>
+  :root {
+    --bg: #fbf7f2; --ink: #2a211b; --muted: #6b5d52; --card: #ffffff; --line: #eadfd3;
+    --copper: #b4632f; --copper-2: #8f4a1f; --chili: #b3261e; --ok: #2e7d4f; --code: #f3ece4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #171310; --ink: #f2e9e1; --muted: #b8a89a; --card: #211b17; --line: #3a2f27;
+      --copper: #e08a4f; --copper-2: #f0a56f; --chili: #ff6b5e; --ok: #5cc98a; --code: #2a221d; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  a { color: var(--copper); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .88em; }
+  code { background: var(--code); padding: .1em .35em; border-radius: 4px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 22px; }
+  header { padding: 72px 0 40px; border-bottom: 1px solid var(--line); }
+  .eyebrow { color: var(--copper); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; }
+  h1 { font-size: clamp(2rem, 5vw, 3.3rem); line-height: 1.1; margin: .3em 0 .4em; letter-spacing: -.02em; }
+  h1 span { color: var(--copper); }
+  .lede { font-size: 1.15rem; color: var(--muted); max-width: 680px; }
+  .pill { display: inline-block; border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: .25em .8em; margin: .2em .3em 0 0; font-size: .85rem; }
+  .pill b { color: var(--ok); }
+  .pill.warn b { color: var(--chili); }
+  .cta { display: inline-block; margin-top: 22px; background: var(--copper); color: #fff; padding: .7em 1.2em; border-radius: 8px; text-decoration: none; font-weight: 600; }
+  .cta:hover { background: var(--copper-2); }
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  h2 { font-size: 1.7rem; margin: 0 0 .3em; letter-spacing: -.01em; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 18px 14px; }
+  .card h3 { margin: 0 0 .3em; font-size: 1.05rem; }
+  .card p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .flow { display: grid; gap: 10px; }
+  .step { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+  .num { width: 34px; height: 34px; border-radius: 50%; background: var(--copper); color: #fff; display: grid; place-items: center; font-weight: 700; }
+  .step p { margin: .15em 0 0; color: var(--muted); font-size: .95rem; }
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; font-size: .93rem; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--code); font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  .b { color: var(--chili); font-weight: 600; } .a { color: var(--ok); font-weight: 600; }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow-x: auto; line-height: 1.5; }
+  .two { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .note { border-left: 4px solid var(--copper); background: var(--card); padding: 12px 16px; border-radius: 0 8px 8px 0; color: var(--muted); }
+  footer { padding: 36px 0 60px; color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Claude Code · Email marketing lab</div>
+    <h1>An email studio where <span>emailing a real person</span> is the hard part.</h1>
+    <p class="lede">Plan a launch, write on-brand copy, personalize it per audience, and send it only to a local test inbox. Every check is automated, and every check is tested to prove it can fail.</p>
+    <div>
+      <span class="pill"><b>127</b> tests passing</span>
+      <span class="pill"><b>42</b> send-guard cases</span>
+      <span class="pill"><b>31</b> linter mutation tests</span>
+      <span class="pill"><b>16</b> emails lint-clean</span>
+      <span class="pill warn"><b>0</b> real emails sent</span>
+    </div>
+    <a class="cta" href="https://github.com/">View the code on GitHub</a>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>What's in the studio</h2>
+    <p class="sub">A made-up spice shop, Clove &amp; Copper, launching a made-up monthly box, The Spice Circle.</p>
+    <div class="grid">
+      <div class="card"><h3>🎙️ Brand voice</h3><p>A human guide plus a machine-readable config, kept in sync by a test.</p></div>
+      <div class="card"><h3>🗺️ Launch plan</h3><p>Ten-section plan and a four-email sequence with A/B sample sizes worked out first.</p></div>
+      <div class="card"><h3>👥 24 fake leads</h3><p>Three audiences, all on <code>@example.com</code>, validated on every run.</p></div>
+      <div class="card"><h3>✉️ 16 emails</h3><p>Four base emails and twelve personalized versions with a CAN-SPAM-style footer.</p></div>
+      <div class="card"><h3>🛡️ Send guard</h3><p>Default-deny hook on MCP, Bash, PowerShell and WebFetch. Test inbox and your own address only.</p></div>
+      <div class="card"><h3>📏 Linter</h3><p>Objective rules from config: CTA count, claims, urgency, prices, deadline, UTMs, footer.</p></div>
+      <div class="card"><h3>⚖️ LLM judge</h3><p>Judgement calls the linter can't make, with schema-validated output.</p></div>
+      <div class="card"><h3>🎯 Calibration</h3><p>Golden set with precision, recall, Cohen's κ and 95% intervals.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The workflow</h2>
+    <p class="sub">Brand → plan → leads → copy → personalization → checks → practice send.</p>
+    <div class="flow">
+      <div class="step"><div class="num">1</div><div><b>Voice and rules</b><p><code>brand/voice.md</code> for people, <code>studio.config.json</code> for the linter.</p></div></div>
+      <div class="step"><div class="num">2</div><div><b>Plan and sequence</b><p>Drafted with Anthropic's marketing plugin, then edited by hand.</p></div></div>
+      <div class="step"><div class="num">3</div><div><b>Write and personalize</b><p>The <code>personalize</code> skill runs as a fork, writes 12 versions, and lints its own output.</p></div></div>
+      <div class="step"><div class="num">4</div><div><b>Check</b><p>Linter on every push; LLM judge on PRs that touch copy. Tool errors exit 2, never 0.</p></div></div>
+      <div class="step"><div class="num">5</div><div><b>Practice send</b><p>Email 01 per group to <code>delivered@resend.dev</code> on a local emulator, then the inbox is verified.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>The send guard, by example</h2>
+    <p class="sub">Every row is a test in <code>tests/send-guard.test.mjs</code>.</p>
+    <table>
+      <tr><th>Tool call</th><th>Result</th><th>Why</th></tr>
+      <tr><td><code>send-email</code> to <code>delivered@resend.dev</code></td><td class="a">allow</td><td>Test inbox</td></tr>
+      <tr><td><code>send-email</code> to a lead on <code>@example.com</code></td><td class="b">block</td><td>Not an allowed recipient</td></tr>
+      <tr><td><code>send-email</code> to <code>x@resend.dev.evil.com</code></td><td class="b">block</td><td>Exact domain match only</td></tr>
+      <tr><td><code>send-batch-emails</code> to the test inbox</td><td class="b">block</td><td>MCP is default-deny</td></tr>
+      <tr><td><code>send-broadcast</code></td><td class="b">block</td><td>Denied in settings and in the hook</td></tr>
+      <tr><td><code>list-emails</code></td><td class="a">allow</td><td>Read-only</td></tr>
+      <tr><td>Bash: <code>curl https://api.resend.com/emails</code></td><td class="b">block</td><td>Real provider host</td></tr>
+      <tr><td>Bash: <code>python -c "import smtplib…"</code></td><td class="b">block</td><td>Direct SMTP</td></tr>
+      <tr><td>Malformed hook input</td><td class="b">block</td><td>Fails closed</td></tr>
+    </table>
+    <p class="note">A hook is a guardrail, not a sandbox. The layer that makes a real send impossible is that no real provider key exists in the studio: <code>.mcp.json</code> hard-codes a dummy key and a localhost URL.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Linter vs judge</h2>
+    <p class="sub">Cheap, deterministic checks first. The model only gets the judgement calls.</p>
+    <div class="two">
+      <div class="card"><h3>📏 Linter</h3><p>Length, emoji, ALL CAPS, <code>Re:</code>, one CTA, no extra links, banned phrases, token fallbacks, prices, deadline, UTMs, footer, lead data. <b>31 mutation tests</b> break one rule each and check it's caught.</p></div>
+      <div class="card"><h3>⚖️ Judge</h3><p>Implied health claims ("good for your gut"), soft scarcity ("spots are going quickly"), guilt, a second CTA in prose, invented offer terms. <b>Measured</b> against a golden set before it's trusted as a gate.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Try it</h2>
+    <pre>npm test                 # 127 tests
+npm run lint             # 16 emails
+npm run emulator         # terminal 1: local Resend on :4000
+npm run send:launch      # terminal 2: practice send + inbox check
+npm run calibrate        # judge vs golden labels</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Practice lab. Clove &amp; Copper, The Spice Circle and every lead are made up. MIT © 2026 Rehan Masood.
+  </div>
+</footer>
+</body>
+</html>

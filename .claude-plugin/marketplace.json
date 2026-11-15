@@ -1,0 +1,12 @@
+{
+  "name": "clove-copper-studio",
+  "description": "Marketplace for the Clove & Copper Email Studio: ships the studio-kit plugin.",
+  "owner": { "name": "Rehan Masood" },
+  "plugins": [
+    {
+      "name": "studio-kit",
+      "source": "./studio-kit",
+      "description": "Default-deny send-guard hook, deterministic email linter, LLM-judge review, email-reviewer subagent and personalize skill."
+    }
+  ]
+}

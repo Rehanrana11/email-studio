@@ -1,0 +1,25 @@
+id,first_name,last_name,email,group,city,favorite_blend,signup_date,orders,consent
+L001,Noor,Halvorsen,noor.halvorsen@example.com,curious,Albany,unknown,2026-08-11,0,yes
+L002,Tariq,Bellweather,tariq.bellweather@example.com,curious,Buffalo,unknown,2026-08-29,0,yes
+L003,Elena,Marchbanks,elena.marchbanks@example.com,curious,Hartford,smoky paprika,2026-09-07,0,yes
+L004,Kwame,Ashdown,kwame.ashdown@example.com,curious,Newark,unknown,2026-09-18,0,yes
+L005,Ines,Calloway,ines.calloway@example.com,curious,Providence,unknown,2026-10-02,0,yes
+L006,Haruto,Penhallow,haruto.penhallow@example.com,curious,Philadelphia,cumin,2026-10-14,0,yes
+L007,Maya,Quintrell,maya.quintrell@example.com,curious,Trenton,unknown,2026-10-21,0,yes
+L008,Bilal,Stroudley,bilal.stroudley@example.com,curious,Yonkers,unknown,2026-11-03,0,yes
+L009,Sofia,Ravenhill,sofia.ravenhill@example.com,home-cooks,Stamford,garam masala,2025-11-20,4,yes
+L010,Daniel,Okonkwo-Pryce,daniel.okonkwopryce@example.com,home-cooks,New Haven,za'atar,2026-01-09,3,yes
+L011,Aisha,Fernleigh,aisha.fernleigh@example.com,home-cooks,Jersey City,harissa,2025-09-14,7,yes
+L012,Marco,Tilbury,marco.tilbury@example.com,home-cooks,White Plains,unknown,2026-02-22,2,yes
+L013,Leila,Dunmore,leila.dunmore@example.com,home-cooks,Hoboken,baharat,2025-12-05,5,yes
+L014,Owen,Castellane,owen.castellane@example.com,home-cooks,Rochester,smoky paprika,2026-03-30,2,yes
+L015,Zainab,Whitlock,zainab.whitlock@example.com,home-cooks,Syracuse,unknown,2026-04-17,3,yes
+L016,Chen,Abernathy,chen.abernathy@example.com,home-cooks,Allentown,five-spice,2025-10-28,6,yes
+L017,Grace,Pemberton,grace.pemberton@example.com,gifters,Princeton,unknown,2025-12-12,1,yes
+L018,Yusuf,Ellery,yusuf.ellery@example.com,gifters,Bridgeport,garam masala,2025-12-18,2,yes
+L019,Hana,Moorcroft,hana.moorcroft@example.com,gifters,Scranton,unknown,2026-05-07,1,yes
+L020,Luca,Brightwater,luca.brightwater@example.com,gifters,Poughkeepsie,unknown,2025-12-02,1,yes
+L021,Amara,Kingsley-Vance,amara.kingsleyvance@example.com,gifters,Worcester,za'atar,2026-02-10,2,yes
+L022,Felix,Hargreave,felix.hargreave@example.com,gifters,Springfield,unknown,2025-11-29,1,yes
+L023,Rania,Colebrook,rania.colebrook@example.com,gifters,Ithaca,harissa,2026-06-15,3,yes
+L024,Theo,Wainscott,theo.wainscott@example.com,gifters,Binghamton,unknown,2025-12-21,1,yes

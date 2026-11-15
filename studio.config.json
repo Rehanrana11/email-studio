@@ -1,0 +1,30 @@
+{
+  "$comment": "Single source of truth for the machine-checkable brand and offer rules. Read by studio-kit/scripts/lint-emails.mjs and the tests. brand/voice.md is the human-readable version; keep both in step.",
+  "brand": "Clove & Copper",
+  "campaign": "spice-circle-launch",
+  "campaignDir": "campaigns/spice-circle-launch",
+  "linkDomain": "cloveandcopper.example.com",
+  "audiences": ["all", "curious", "home-cooks", "gifters"],
+  "tokens": ["first_name", "favorite_blend", "unsubscribe_url"],
+  "subject": { "maxChars": 45, "maxEmoji": 1 },
+  "preview": { "minChars": 40, "maxChars": 90 },
+  "body": { "maxWords": 170, "maxExclamations": 1 },
+  "signOff": "Warmly, Rafi & the Clove & Copper kitchen 🌶️",
+  "footer": [
+    "You're getting this because you signed up at Clove & Copper. Unsubscribe any time: {{unsubscribe_url}}",
+    "Clove & Copper Spice Co. (a made-up practice brand) · PO Box 000, Example City, NY 00000"
+  ],
+  "offer": {
+    "regularPrice": "$22/month",
+    "foundingPrice": "$17/month",
+    "deadline": "Friday 18 December",
+    "deadlineIso": "2026-12-18",
+    "blendsPerBox": "three"
+  },
+  "bannedPhrases": {
+    "health-claim": ["detox", "cure", "cures", "heal", "heals", "boost", "boosts", "immunity", "immune", "anti-inflammatory", "superfood", "miracle", "burns fat", "metabolism", "medicinal"],
+    "fake-urgency": ["hurry", "don't miss out", "last chance", "act now", "only a few left", "selling fast", "limited stock", "while supplies last"],
+    "hype": ["revolutionary", "game-changer", "game changer", "unbelievable", "insane", "best ever"]
+  },
+  "misleadingSubjectPrefixes": ["re:", "fwd:", "fw:", "your order", "your receipt", "invoice"]
+}
