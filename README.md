@@ -188,7 +188,7 @@ The `echo … | node` commands are for bash (on Windows, use Git Bash). `npm tes
 ## 📦 studio-kit (reusable plugin)
 
 ```bash
-/plugin marketplace add <your-github-user>/<this-repo>
+/plugin marketplace add Rehanrana11/email-studio
 /plugin install studio-kit@clove-copper-studio
 ```
 Ships the send-guard hook, the linter, the judge, the email-reviewer subagent and the personalize skill. Point it at

@@ -20,11 +20,11 @@ and you get the same guardrails, checks and helpers. Everything brand-specific l
 - `MY_EMAIL` in the client's `.claude/settings.local.json` (gitignored) if you want to receive practice mail yourself.
 
 ## Install from the marketplace
-This repo is also a plugin marketplace (`.claude-plugin/marketplace.json`). Replace `<owner>/<repo>` with
+This repo is also a plugin marketplace (`.claude-plugin/marketplace.json`). Replace `Rehanrana11/email-studio` with
 wherever you published it:
 
 ```
-/plugin marketplace add <owner>/<repo>
+/plugin marketplace add Rehanrana11/email-studio
 /plugin install studio-kit@clove-copper-studio
 ```
 
