@@ -2,7 +2,7 @@
 
 Each lab step, where its proof lives, and where this repo does it differently. A difference is kept only when it
 is stronger for a real client than the lab's version; the reason is given. Nothing here was weakened to match the
-lab's wording. Status as of 16 Nov 2026; `npm test` → 139 passing.
+lab's wording. Status as of 16 Nov 2026; `npm test` → 140 passing.
 
 **Status key.** **Done**: built, with proof in the repo. **Done, differently**: built in a stronger form, reason given.
 **Owner runs**: needs a live Claude Code session by the owner (the lab's point is doing it), so it is not claimed here.

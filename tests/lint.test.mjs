@@ -22,6 +22,14 @@ for (const file of files) {
   });
 }
 
+test("every clean email still lints clean with Windows (CRLF) line endings", () => {
+  for (const file of files) {
+    const crlf = readFileSync(file, "utf8").replace(/\r?\n/g, "\r\n");
+    const findings = lintEmail(crlf, { config, path: file });
+    assert.deepEqual(findings, [], `${file}: ${findings.map((f) => f.id).join(", ")}`);
+  }
+});
+
 // Mutation tests: each takes a clean email, breaks exactly one rule, and asserts the linter notices.
 // A checker that can't fail is worthless; these prove every rule can fail.
 const MUTATIONS = [
@@ -48,11 +56,11 @@ const MUTATIONS = [
   ["send after the deadline", (t) => t.replace("send_date: 2026-12-02", "send_date: 2026-12-20"), "send-date-after-deadline"],
   ["unknown token", (t) => t.replace("Hi {{first_name}}", "Hi {{firstname}}"), "token-unknown"],
   ["favorite_blend without fallback", (t) => t.replace("Get the pan warm and have a look.", "Your {{favorite_blend}} misses you."), "token-needs-fallback"],
-  ["missing unsubscribe footer", (t) => t.replace(/You're getting this.*\n/, ""), "footer-missing"],
+  ["missing unsubscribe footer", (t) => t.replace(/You're getting this.*\r?\n/, ""), "footer-missing"],
   ["missing postal address", (t) => t.replace(/Clove & Copper Spice Co\. \(a made-up.*\n?/, ""), "footer-missing"],
   ["missing sign-off", (t) => t.replace("Warmly, Rafi & the Clove & Copper kitchen 🌶️", "Cheers"), "sign-off-missing"],
   ["lead surname in copy", (t) => t.replace("Hi {{first_name}},", "Hi {{first_name}} Halvorsen,"), "lead-pii-in-copy"],
-  ["missing frontmatter key", (t) => t.replace(/cta_text: .*\n/, ""), "fm-missing-cta-text"],
+  ["missing frontmatter key", (t) => t.replace(/cta_text: .*\r?\n/, ""), "fm-missing-cta-text"],
   ["name does not match file", (t) => t.replace("name: get-the-pan-warm", "name: something-else"), "fm-name-mismatch"],
   ["base email with group audience", (t) => t.replace("audience: all", "audience: gifters"), "audience-base-not-all"],
   ["body too long", (t) => t.replace("Get the pan warm and have a look.", "word ".repeat(120)), "body-too-long"],

@@ -4,8 +4,8 @@
 
 ### A practice-only email marketing studio built with Claude Code, with guarded sends, a deterministic linter, and an LLM judge you can measure
 
-![CI](https://img.shields.io/badge/ci-node%20--test-2ea44f)
-![Tests](https://img.shields.io/badge/tests-139%20passing-2ea44f)
+[![CI](https://github.com/Rehanrana11/email-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/Rehanrana11/email-studio/actions/workflows/ci.yml)
+![Tests](https://img.shields.io/badge/tests-140%20passing-2ea44f)
 ![Send guard](https://img.shields.io/badge/send--guard-42%20attack%2Fallow%20cases-2ea44f)
 ![Mutation tests](https://img.shields.io/badge/linter-31%20mutation%20tests-2ea44f)
 ![Real email](https://img.shields.io/badge/real%20email-never%20sent-critical)
@@ -134,7 +134,7 @@ A global "already resolved ids" list would let the same mistake back in through 
 Needs Node 22+ and Claude Code. Commands work in bash and PowerShell unless noted.
 
 ```bash
-npm test                     # 139 tests: guard, linter + mutations, leads, review gate + re-review, portability, wiring
+npm test                     # 140 tests: guard, linter + mutations, leads, review gate + re-review, portability, wiring
 npm run lint                 # lint all 16 emails
 
 # Practice send (two terminals)
