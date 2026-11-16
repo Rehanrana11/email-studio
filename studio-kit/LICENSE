@@ -1,5 +1,11 @@
 MIT License
 
+Scope: this licence covers only the files listed under "Added here" in PROVENANCE.md (studio-kit/ paths).
+Files listed under "Started from his repository" began as files from
+https://github.com/hafiznaveedchuhan-ctrl/my-email-studio, which has no licence. They are
+not licensed by me, and no rights in them are granted by this file.
+
+
 Copyright (c) 2026 Rehan Masood
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
