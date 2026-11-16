@@ -11,7 +11,7 @@ It started as a copy of [hafiznaveedchuhan-ctrl/my-email-studio](https://github.
 
 His repository has no licence file (checked 16 Nov 2026), so no licence to reuse it is granted. The files under **Started from his repository** are therefore **not** covered by this repository's MIT licence, and nothing here claims them as mine. The MIT licence in `LICENSE` covers only the files under **Added here**.
 
-Permission from the author: **not yet obtained** (status as of 16 Nov 2026). This line will be updated with the date and the answer.
+Permission from the author: **granted on 16 Nov 2026.** Hafiz Naveed agreed that this repository may build on his, and may be published and submitted for the lab, with this credit. His permission does not put his files under MIT; they stay his.
 
 ## How the scores were measured
 

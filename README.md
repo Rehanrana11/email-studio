@@ -218,7 +218,8 @@ judge golden set and calibration, the waivers, the re-review, client two and the
 with a reproducible similarity score.
 
 His repository has no licence, so the files that began as his are **not** under this repo's MIT licence and are
-not claimed as mine. Permission from the author: not yet obtained (16 Nov 2026).
+not claimed as mine. The author gave permission on 16 Nov 2026 for this repo to build on his and to be published
+and submitted with this credit.
 
 Also uses Anthropic's `marketing` plugin
 ([knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins), Apache-2.0),
