@@ -1,10 +1,10 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
-import { extractReview, applyWaivers, decide, sha256, buildPrompt } from "../studio-kit/scripts/review.mjs";
+import { extractReview, applyWaivers, decide, sha256, buildPrompt, compareWithPrevious } from "../studio-kit/scripts/review.mjs";
 import { score, wilson } from "../scripts/calibrate-judge.mjs";
 
 const finding = (over = {}) => ({ id: "voice-corporate", severity: "medium", category: "voice", rule: "r", location: "body", before: "Dear valued customer", after: "Hi", ...over });
@@ -92,4 +92,84 @@ test("score computes confusion matrix, precision, recall and kappa", () => {
   assert.equal(s.recall, 0.8);
   assert.ok(Math.abs(s.precision - 8 / 9) < 1e-9);
   assert.ok(Math.abs(s.kappa - 0.7) < 1e-9, String(s.kappa));
+});
+
+// --- Re-review (lab step 13, build 2): no repeats, and never an easier verdict -------------------------------
+
+const BASE_EMAIL = "campaigns/spice-circle-launch/emails/01-get-the-pan-warm.md";
+const LINE = "Same five dinners on repeat?";
+
+test("prompt shows the last review's findings only on a re-review", () => {
+  const args = { voice: "V", emailText: "E", file: "x.md", lintFindings: [] };
+  assert.doesNotMatch(buildPrompt(args), /FINDINGS FROM THE LAST REVIEW/);
+  const p = buildPrompt({ ...args, previousFindings: [finding({ id: "voice-hype" })] });
+  assert.match(p, /FINDINGS FROM THE LAST REVIEW/);
+  assert.match(p, /voice-hype/);
+  assert.match(p, /Don't repeat ones that have been fixed/);
+});
+
+test("compareWithPrevious: new, still-open by id or by text, fixed only when the text is gone", () => {
+  const email = `Hi. ${LINE} Dear valued customer.`;
+  const prev = [
+    finding({ id: "voice-corporate", before: "Dear valued customer" }),
+    finding({ id: "clarity-old", before: "text that was removed" }),
+    finding({ id: "voice-repeat", before: LINE }),
+  ];
+  const current = [
+    finding({ id: "voice-corporate", before: "Dear valued customer" }), // same id
+    finding({ id: "voice-renamed", before: LINE }), // same text, new id
+    finding({ id: "health-claim-new", severity: "high", category: "health-claim", before: "Hi." }),
+  ];
+  const { judged, fixed } = compareWithPrevious(current, prev, email);
+  const status = Object.fromEntries(judged.map((f) => [f.id, f.status]));
+  assert.deepEqual(status, { "voice-corporate": "still-open", "voice-renamed": "still-open", "health-claim-new": "new" });
+  assert.deepEqual(fixed.map((f) => f.id), ["clarity-old"]);
+  assert.equal(judged.length, 3, "nothing reported twice");
+});
+
+test("compareWithPrevious carries forward a dropped finding whose text is still in the email", () => {
+  const prev = [finding({ id: "fake-urgency-x", severity: "high", category: "fake-urgency", before: LINE })];
+  const { judged, fixed } = compareWithPrevious([], prev, `Hi. ${LINE}`);
+  assert.equal(fixed.length, 0);
+  assert.equal(judged[0].carried_forward, true);
+  assert.equal(decide([], judged).pass, false, "a judge that stops repeating itself cannot pass the email");
+});
+
+function reviewCli(target, raw, outDir) {
+  const p = join(mkdtempSync(join(tmpdir(), "raw-")), "raw.json");
+  writeFileSync(p, JSON.stringify(raw));
+  return spawnSync(process.execPath, ["studio-kit/scripts/review.mjs", target, "--raw", p, "--out-dir", outDir], { encoding: "utf8" });
+}
+
+test("re-review CLI: a FAIL stays a FAIL until the offending text is fixed, then reports it as fixed", (t) => {
+  mkdirSync(join("review", "out"), { recursive: true });
+  const dir = mkdtempSync(join("review", "out", "rr-")); // review/out is gitignored
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const email = join(dir, "01-get-the-pan-warm.md");
+  copyFileSync(BASE_EMAIL, email);
+  const outDir = join(dir, "results");
+  const high = { structured_output: { overall: "fail", findings: [finding({ id: "voice-repeat", severity: "high", before: LINE })] } };
+  const clean = { structured_output: { overall: "pass", findings: [] } };
+
+  assert.equal(reviewCli(dir, high, outDir).status, 1, "first review finds the problem");
+  assert.equal(reviewCli(dir, clean, outDir).status, 1, "judge drops it, text unchanged: still FAIL");
+  writeFileSync(email, readFileSync(email, "utf8").replace(LINE, "Cooking the same few dinners?"));
+  const r = reviewCli(dir, clean, outDir);
+  assert.equal(r.status, 0, "text fixed: PASS");
+  assert.match(r.stdout, /\[FIXED\] voice-repeat/);
+});
+
+test("review CLI on a folder reviews every email and saves one result per file; an empty folder is an error", (t) => {
+  mkdirSync(join("review", "out"), { recursive: true });
+  const dir = mkdtempSync(join("review", "out", "folder-"));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  for (const n of ["01-get-the-pan-warm.md", "02-whats-in-the-box.md"]) copyFileSync(join("campaigns/spice-circle-launch/emails", n), join(dir, n));
+  const outDir = join(dir, "results");
+  const r = reviewCli(dir, { structured_output: { overall: "pass", findings: [] } }, outDir);
+  assert.equal(r.status, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /2 file\(s\): 2 pass/);
+  assert.ok(existsSync(outDir));
+  const empty = mkdtempSync(join("review", "out", "empty-"));
+  t.after(() => rmSync(empty, { recursive: true, force: true }));
+  assert.equal(reviewCli(empty, { structured_output: { overall: "pass", findings: [] } }, outDir).status, 2);
 });

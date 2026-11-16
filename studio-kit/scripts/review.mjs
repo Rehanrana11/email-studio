@@ -1,8 +1,17 @@
 #!/usr/bin/env node
 // review: LLM-as-judge brand review for one email file, gated together with the deterministic linter.
 //
-//   node studio-kit/scripts/review.mjs <email.md> [--voice brand/voice.md] [--config studio.config.json]
+//   node studio-kit/scripts/review.mjs <email.md | folder> [--voice brand/voice.md] [--config studio.config.json]
 //        [--waivers review/waivers.json] [--model sonnet] [--json] [--dry-run] [--raw <saved-claude-output.json>]
+//        [--out-dir review/out]
+//
+// A folder reviews every .md file under it (sorted). Exit code is the worst of the files.
+//
+// Re-review (--out-dir): each file's result is saved to <out-dir>/<path with / as __>.json. The next run on the
+// same file reads it back, shows it to the judge ("report only new or still-unfixed problems"), and classifies
+// every finding by its stable id: new, still-open or fixed. A finding counts as fixed only when its offending
+// text is gone from the email. If the judge drops a finding whose text is still there, it is carried forward,
+// so asking the judge not to repeat itself can never turn a FAIL into a PASS.
 //
 // Pipeline:
 //   1. Run the deterministic linter (lint-emails.mjs). Objective rules live there, not in the prompt.
@@ -20,9 +29,9 @@
 // --raw parses a saved `claude -p --output-format json` result instead of calling the model (used by tests).
 
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync, realpathSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, statSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { dirname, relative, resolve, sep } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { lintEmail, loadConfig } from "./lint-emails.mjs";
 
@@ -32,7 +41,42 @@ const UNWAIVABLE = new Set(["health-claim", "fake-urgency", "misleading-subject"
 
 export const sha256 = (s) => createHash("sha256").update(String(s).trim()).digest("hex");
 
-export function buildPrompt({ voice, emailText, file, lintFindings }) {
+export function previousSection(previousFindings = []) {
+  if (!previousFindings.length) return "";
+  const list = previousFindings.map((f) => `- [${f.severity}] ${f.id}: "${f.before}"`).join("\n");
+  return `
+=== FINDINGS FROM THE LAST REVIEW ===
+These are findings from the last review. Report only problems that are new or still not fixed, and reuse the
+same id for a problem that is still there. Don't repeat ones that have been fixed.
+${list}
+`;
+}
+
+// Classify this run's findings against the last run's, by stable id (or identical offending text).
+// A previous finding the judge did not report again counts as fixed only if its text is gone from the email;
+// otherwise it is carried forward as still-open, so the verdict cannot get easier because of the re-review.
+export function compareWithPrevious(current, previous, emailText) {
+  const matched = new Set();
+  const judged = current.map((f) => {
+    const i = previous.findIndex((q, j) => !matched.has(j) && (q.id === f.id || sha256(q.before) === sha256(f.before)));
+    if (i >= 0) matched.add(i);
+    return { ...f, status: i >= 0 ? "still-open" : "new" };
+  });
+  const fixed = [];
+  previous.forEach((p, j) => {
+    if (matched.has(j)) return;
+    const { status, carried_forward, ...rest } = p;
+    if (p.before && emailText.includes(p.before)) judged.push({ ...rest, status: "still-open", carried_forward: true });
+    else fixed.push(rest);
+  });
+  return { judged, fixed };
+}
+
+export function outPathFor(outDir, rel) {
+  return resolve(outDir, `${rel.replace(/[\\/:]/g, "__")}.json`);
+}
+
+export function buildPrompt({ voice, emailText, file, lintFindings, previousFindings = [] }) {
   const lintSummary = lintFindings.length
     ? lintFindings.map((f) => `- [${f.severity}] ${f.id}: ${f.message}`).join("\n")
     : "- none";
@@ -58,7 +102,7 @@ ${lintSummary}
 
 === BRAND VOICE ===
 ${voice}
-
+${previousSection(previousFindings)}
 === EMAIL (${file}) ===
 ${emailText}`;
 }
@@ -126,35 +170,39 @@ function runClaude(prompt, { model }) {
   });
 }
 
-function main() {
-  const args = process.argv.slice(2);
-  const valueFlags = new Set(["--voice", "--config", "--waivers", "--model", "--raw"]);
-  const opt = (name) => {
-    const i = args.indexOf(name);
-    return i >= 0 ? args[i + 1] : null;
-  };
-  const file = args.find((a, i) => !a.startsWith("--") && !valueFlags.has(args[i - 1]));
-  if (!file) {
-    console.error("usage: review.mjs <email.md> [--voice <md>] [--config <json>] [--waivers <json>] [--model <m>] [--json] [--dry-run] [--raw <file>]");
-    process.exit(2);
+function listMarkdown(dir) {
+  const out = [];
+  for (const name of readdirSync(dir).sort()) {
+    const p = join(dir, name);
+    if (statSync(p).isDirectory()) out.push(...listMarkdown(p));
+    else if (name.endsWith(".md")) out.push(p);
+  }
+  return out;
+}
+
+function reviewOne(file, ctx) {
+  const { args, opt, config, projectRoot, voice, waivers } = ctx;
+  const rel = relative(projectRoot, resolve(file)).split(sep).join("/");
+  const emailText = readFileSync(resolve(file), "utf8");
+  const lintFindings = lintEmail(emailText, { config, path: rel });
+
+  const outDir = opt("--out-dir");
+  const outPath = outDir ? outPathFor(outDir, rel) : null;
+  let previous = [];
+  if (outPath && existsSync(outPath)) {
+    try {
+      const last = JSON.parse(readFileSync(outPath, "utf8"));
+      if (last.file === rel && Array.isArray(last.judge)) previous = last.judge;
+      else console.error(`review: ignoring ${outPath}: it is for another file`);
+    } catch {
+      console.error(`review: ignoring unreadable ${outPath}`);
+    }
   }
 
-  const configPath = resolve(opt("--config") || "studio.config.json");
-  const config = loadConfig(configPath);
-  const projectRoot = dirname(configPath);
-  const rel = relative(projectRoot, resolve(file)).split(sep).join("/");
-  const voicePath = resolve(opt("--voice") || "brand/voice.md");
-  const voice = existsSync(voicePath) ? readFileSync(voicePath, "utf8") : "(no brand voice guide found; use general email best practice)";
-  const emailText = readFileSync(resolve(file), "utf8");
-  const waiversPath = opt("--waivers") || "review/waivers.json";
-  const waivers = existsSync(waiversPath) ? JSON.parse(readFileSync(waiversPath, "utf8")).waivers || [] : [];
-
-  const lintFindings = lintEmail(emailText, { config, path: rel });
-  const prompt = buildPrompt({ voice, emailText, file: rel, lintFindings });
-
+  const prompt = buildPrompt({ voice, emailText, file: rel, lintFindings, previousFindings: previous });
   if (args.includes("--dry-run")) {
     console.log(prompt);
-    process.exit(0);
+    return 0;
   }
 
   let review;
@@ -162,29 +210,84 @@ function main() {
     const raw = opt("--raw") ? readFileSync(opt("--raw"), "utf8") : runClaude(prompt, { model: opt("--model") || process.env.REVIEW_MODEL });
     review = extractReview(raw);
   } catch (e) {
-    console.error(`review: could not get a valid review (${e.message.split("\n")[0]}). Treating as an error, not a pass.`);
-    process.exit(2);
+    console.error(`review: could not get a valid review of ${rel} (${e.message.split("\n")[0]}). Treating as an error, not a pass.`);
+    return 2;
   }
 
   const { kept, waived } = applyWaivers(review.findings, waivers, { file: rel });
-  const verdict = decide(lintFindings, kept);
+  const { judged, fixed } = compareWithPrevious(kept, previous, emailText);
+  const verdict = decide(lintFindings, judged);
+  const result = {
+    file: rel,
+    email_sha256: sha256(emailText),
+    reviewed_at: new Date().toISOString(),
+    pass: verdict.pass,
+    lint: lintFindings,
+    judge: judged,
+    fixed,
+    waived,
+  };
+  if (outPath) {
+    mkdirSync(dirname(outPath), { recursive: true });
+    writeFileSync(outPath, JSON.stringify(result, null, 2) + "\n");
+  }
 
   if (args.includes("--json")) {
-    console.log(JSON.stringify({ file: rel, pass: verdict.pass, lint: lintFindings, judge: kept, waived }, null, 2));
+    console.log(JSON.stringify(result, null, 2));
   } else {
     console.log(`\nReview of ${rel}`);
     console.log(`  Linter: ${lintFindings.length} finding(s), ${verdict.lintBlocking.length} blocking`);
     for (const f of lintFindings) console.log(`    [${f.severity.toUpperCase()}] ${f.id}: ${f.message}`);
-    console.log(`  Judge:  ${kept.length} finding(s), ${verdict.judgeHigh.length} high${waived.length ? `, ${waived.length} waived` : ""}`);
-    for (const f of kept) {
-      console.log(`    [${f.severity.toUpperCase()}] ${f.id}: ${f.rule}`);
-      console.log(`       at:     ${f.location}`);
+    const n = (st) => judged.filter((f) => f.status === st).length;
+    const counts = previous.length ? ` (${n("new")} new, ${n("still-open")} still open, ${fixed.length} fixed)` : "";
+    console.log(`  Judge:  ${judged.length} finding(s), ${verdict.judgeHigh.length} high${waived.length ? `, ${waived.length} waived` : ""}${counts}`);
+    for (const f of judged) {
+      const tag = previous.length ? ` (${f.status}${f.carried_forward ? ", text unchanged" : ""})` : "";
+      console.log(`    [${f.severity.toUpperCase()}] ${f.id}${tag}: ${f.rule ?? ""}`);
+      console.log(`       at:     ${f.location ?? ""}`);
       console.log(`       before: ${f.before}`);
-      console.log(`       after:  ${f.after}`);
+      console.log(`       after:  ${f.after ?? ""}`);
     }
+    for (const f of fixed) console.log(`    [FIXED] ${f.id}`);
     console.log(verdict.pass ? "\nPASS" : "\nFAIL");
   }
-  process.exit(verdict.pass ? 0 : 1);
+  return verdict.pass ? 0 : 1;
+}
+
+function main() {
+  const args = process.argv.slice(2);
+  const valueFlags = new Set(["--voice", "--config", "--waivers", "--model", "--raw", "--out-dir"]);
+  const opt = (name) => {
+    const i = args.indexOf(name);
+    return i >= 0 ? args[i + 1] : null;
+  };
+  const target = args.find((a, i) => !a.startsWith("--") && !valueFlags.has(args[i - 1]));
+  if (!target || !existsSync(target)) {
+    console.error("usage: review.mjs <email.md | folder> [--voice <md>] [--config <json>] [--waivers <json>] [--model <m>] [--json] [--dry-run] [--raw <file>] [--out-dir <dir>]");
+    process.exit(2);
+  }
+
+  const configPath = resolve(opt("--config") || "studio.config.json");
+  const config = loadConfig(configPath);
+  const projectRoot = dirname(configPath);
+  const voicePath = resolve(opt("--voice") || "brand/voice.md");
+  const voice = existsSync(voicePath) ? readFileSync(voicePath, "utf8") : "(no brand voice guide found; use general email best practice)";
+  const waiversPath = opt("--waivers") || "review/waivers.json";
+  const waivers = existsSync(waiversPath) ? JSON.parse(readFileSync(waiversPath, "utf8")).waivers || [] : [];
+
+  const files = statSync(target).isDirectory() ? listMarkdown(target) : [target];
+  if (!files.length) {
+    console.error(`review: no .md files under ${target}. Nothing reviewed is not a pass.`);
+    process.exit(2);
+  }
+  const ctx = { args, opt, config, projectRoot, voice, waivers };
+  const codes = files.map((f) => reviewOne(f, ctx));
+  const worst = codes.includes(2) ? 2 : codes.includes(1) ? 1 : 0;
+  if (files.length > 1) {
+    const c = (k) => codes.filter((x) => x === k).length;
+    console.log(`\n${files.length} file(s): ${c(0)} pass, ${c(1)} fail, ${c(2)} error`);
+  }
+  process.exit(worst);
 }
 
 function isEntryPoint() {
