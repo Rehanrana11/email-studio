@@ -1,0 +1,30 @@
+{
+  "$comment": "Rise & Crumb's machine-checkable rules for the studio-kit linter. A second, made-up client used to prove studio-kit carries nothing brand-specific (lab step 14).",
+  "brand": "Rise & Crumb",
+  "campaign": "spring-bake",
+  "campaignDir": "campaigns/spring-bake",
+  "linkDomain": "riseandcrumb.example",
+  "audiences": ["all", "weekend-bakers", "coffee-lovers"],
+  "tokens": ["first_name", "unsubscribe_url"],
+  "tokensRequiringFallback": [],
+  "subject": { "maxChars": 45, "maxEmoji": 1 },
+  "preview": { "minChars": 40, "maxChars": 90 },
+  "body": { "maxWords": 150, "maxExclamations": 1 },
+  "signOff": "Fresh from the oven,",
+  "footer": [
+    "You're getting this because you joined the Rise & Crumb list. Unsubscribe any time: {{unsubscribe_url}}",
+    "Rise & Crumb Bakery (a made-up practice brand) · PO Box 000, Example Town, NY 00000"
+  ],
+  "offer": {
+    "regularPrice": "$40",
+    "foundingPrice": "$32",
+    "deadline": "Saturday 3 April",
+    "deadlineIso": "2027-04-03"
+  },
+  "bannedPhrases": {
+    "health-claim": ["healthy", "healthier", "guilt-free", "detox", "superfood", "clean eating", "gut health", "boosts", "nutritious", "low-carb", "weight loss"],
+    "fake-urgency": ["hurry", "don't miss out", "last chance", "act now", "only a few left", "selling fast", "limited stock", "while supplies last"],
+    "hype": ["revolutionary", "game-changer", "game changer", "unbelievable", "insane", "best ever"]
+  },
+  "misleadingSubjectPrefixes": ["re:", "fwd:", "fw:", "your order", "your receipt", "invoice"]
+}

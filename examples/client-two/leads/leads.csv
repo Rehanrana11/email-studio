@@ -1,0 +1,7 @@
+id,first_name,last_name,email,group,city,favorite_blend,signup_date,orders,consent
+R001,Mina,Ashcombe,mina.ashcombe@example.com,weekend-bakers,Ithaca,unknown,2027-02-06,1,yes
+R002,Jonah,Petrakis,jonah.petrakis@example.com,weekend-bakers,Utica,unknown,2027-02-13,0,yes
+R003,Selin,Okafor,selin.okafor@example.com,weekend-bakers,Elmira,unknown,2027-02-20,2,yes
+R004,Dev,Larkspur,dev.larkspur@example.com,coffee-lovers,Ithaca,house espresso,2027-02-08,3,yes
+R005,Hollis,Varga,hollis.varga@example.com,coffee-lovers,Cortland,single-origin pour-over,2027-02-15,0,yes
+R006,Priya,Wendover,priya.wendover@example.com,coffee-lovers,Binghamton,unknown,2027-02-22,1,yes
