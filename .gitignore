@@ -9,3 +9,8 @@
 node_modules/
 review/out/
 *.log
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

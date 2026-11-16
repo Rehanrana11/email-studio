@@ -10,6 +10,7 @@ This is a practice lab. No real customer, no real inbox, and no real email exist
 - `leads/`: 24 fake leads (see `leads/CLAUDE.md` for its own rules)
 - `campaigns/spice-circle-launch/`: plan, sequence, 4 base emails, 12 personalized versions
 - `studio-kit/`: the reusable plugin (send-guard hook, linter, LLM reviewer, skill, subagent)
+- `examples/client-two/`: a second made-up client (Rise & Crumb) that runs on the same kit
 - `scripts/`: project scripts (practice send, fake reviews, review analysis)
 - `tests/`: `node --test` suite; `npm test` must pass before any commit
 - `notes/`: decisions, handoffs, experiments
@@ -26,6 +27,7 @@ This is a practice lab. No real customer, no real inbox, and no real email exist
 6. **Check with tools, not by eye.** `npm test` (guard, linter, leads) and `npm run lint` (emails) are the source of truth.
 7. **One step at a time.** Finish a step, report what changed and how to verify it, then stop.
 8. **Conventional commits** (`feat:`, `fix:`, `docs:`, `test:`, `chore:`), one logical change per commit.
+9. **Ask before deleting.** Never delete a file, folder, branch or sent-email record without the owner's go-ahead.
 
 ## Brand voice
 @brand/voice.md
