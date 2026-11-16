@@ -5,7 +5,7 @@ For whoever picks this up in a fresh session (including future me).
 ## Where things stand
 - Built: brand voice + `studio.config.json`, 24 fake leads, plan, sequence, 4 base emails, 12 personalized emails,
   send-guard hook, linter, LLM-judge review script, golden set + calibration harness, studio-kit plugin, CI.
-- `npm test` → 127 passing (send-guard cases, linter on all 16 emails, 31 mutation tests, leads, review gate, wiring).
+- `npm test` → 139 passing as of 16 Nov 2026 (42 send-guard cases, linter on all 16 emails, 31 mutation tests, leads, review gate and re-review, client-two portability, wiring).
 - `npm run lint` → 16/16 emails pass. The bad sample fails with 30 blocking findings.
 - Practice launch: `npm run send:launch` delivered email 01 for all 3 groups to `delivered@resend.dev` on the
   emulator, 3/3 verified, 0 to non-test addresses.

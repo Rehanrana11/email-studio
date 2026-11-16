@@ -5,13 +5,17 @@
 ### A practice-only email marketing studio built with Claude Code, with guarded sends, a deterministic linter, and an LLM judge you can measure
 
 ![CI](https://img.shields.io/badge/ci-node%20--test-2ea44f)
-![Tests](https://img.shields.io/badge/tests-127%20passing-2ea44f)
+![Tests](https://img.shields.io/badge/tests-139%20passing-2ea44f)
 ![Send guard](https://img.shields.io/badge/send--guard-42%20attack%2Fallow%20cases-2ea44f)
 ![Mutation tests](https://img.shields.io/badge/linter-31%20mutation%20tests-2ea44f)
 ![Real email](https://img.shields.io/badge/real%20email-never%20sent-critical)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![License](https://img.shields.io/badge/license-MIT%20(added%20files%20only)-lightgrey)
 
 </div>
+
+> [!NOTE]
+> **Reviewing this for the lab?** [`LAB_MAP.md`](LAB_MAP.md) maps all 15 steps to their proof, and
+> [`PROVENANCE.md`](PROVENANCE.md) shows which files started from another solution and which were added here.
 
 > [!IMPORTANT]
 > **This is a practice lab.** *Clove & Copper* and *The Spice Circle* are made up. There is no real customer and no
@@ -66,8 +70,12 @@ email-studio/
 ├── scripts/                           # send-launch, calibrate-judge, gen/analyze-reviews
 ├── review/                            # golden set, waivers, deliberately bad sample
 ├── tests/                             # node --test suite
+├── examples/client-two/               # a second made-up client (Rise & Crumb) on the same kit
+├── evidence/                          # dated results of real runs (practice launch)
 ├── notes/                             # handoff, experiments, vetting log, review analysis
-└── docs/index.html                    # project page (GitHub Pages)
+├── docs/index.html                    # project page (GitHub Pages)
+├── LAB_MAP.md                         # lab step → proof → deviation and why
+└── PROVENANCE.md                      # which files started from another solution, with scores
 ```
 
 ---
@@ -126,7 +134,7 @@ A global "already resolved ids" list would let the same mistake back in through 
 Needs Node 22+ and Claude Code. Commands work in bash and PowerShell unless noted.
 
 ```bash
-npm test                     # 127 tests: guard, linter + mutations, leads, review gate, wiring
+npm test                     # 139 tests: guard, linter + mutations, leads, review gate + re-review, portability, wiring
 npm run lint                 # lint all 16 emails
 
 # Practice send (two terminals)
@@ -201,11 +209,19 @@ a new brand by writing a new `studio.config.json` and `brand/voice.md`. See [`st
 - A/B variant tracking (`utm_content=email01-<group>-a`) isn't in the linter yet.
 - No landing page; CTAs point at a fake domain.
 
-## Acknowledgements
-Built as my solution to the **FDE-102 Email Studio** lab. Lab structure inspired by
-[hafiznaveedchuhan-ctrl/my-email-studio](https://github.com/hafiznaveedchuhan-ctrl/my-email-studio); brand, copy,
-data, code and tests in this repo are my own. Uses Anthropic's `marketing` plugin
+## Provenance and credits
+This repo is my solution to the **FDE-102 Email Studio** lab. It **started as a copy of**
+[hafiznaveedchuhan-ctrl/my-email-studio](https://github.com/hafiznaveedchuhan-ctrl/my-email-studio)
+(commit `a18df62`), which I re-branded from *Kettlebird Tea* to *Clove & Copper* and then extended with Claude Code.
+47 files began as his; 43 were added here, including the linter and `studio.config.json`, the test suite, the
+judge golden set and calibration, the waivers, the re-review, client two and the CI workflow. [`PROVENANCE.md`](PROVENANCE.md) lists every file
+with a reproducible similarity score.
+
+His repository has no licence, so the files that began as his are **not** under this repo's MIT licence and are
+not claimed as mine. Permission from the author: not yet obtained (16 Nov 2026).
+
+Also uses Anthropic's `marketing` plugin
 ([knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins), Apache-2.0),
 [`resend-mcp`](https://github.com/resend/resend-mcp) and [`emulate`](https://github.com/vercel-labs/emulate).
 
-MIT © 2026 Rehan Masood
+MIT © 2026 Rehan Masood, for the files listed as added in `PROVENANCE.md` only. See `LICENSE`.
