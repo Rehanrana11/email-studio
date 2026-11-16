@@ -6,6 +6,7 @@
   "linkDomain": "cloveandcopper.example.com",
   "audiences": ["all", "curious", "home-cooks", "gifters"],
   "tokens": ["first_name", "favorite_blend", "unsubscribe_url"],
+  "tokensRequiringFallback": ["favorite_blend"],
   "subject": { "maxChars": 45, "maxEmoji": 1 },
   "preview": { "minChars": 40, "maxChars": 90 },
   "body": { "maxWords": 170, "maxExclamations": 1 },

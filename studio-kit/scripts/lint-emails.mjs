@@ -163,7 +163,8 @@ export function lintEmail(text, { config, path = "", leadPii = [] }) {
   for (const m of all.matchAll(/\{\{\s*([^}|]+?)\s*(?:\|([^}]*))?\}\}/g)) {
     const [, name, fallback] = m;
     if (!config.tokens.includes(name)) add("high", "token-unknown", `unknown token {{${name}}}`);
-    if (name === "favorite_blend" && !(fallback && fallback.trim())) add("high", "token-needs-fallback", "{{favorite_blend}} must have a fallback, e.g. {{favorite_blend|usual blend}}");
+    if ((config.tokensRequiringFallback || []).includes(name) && !(fallback && fallback.trim()))
+      add("high", "token-needs-fallback", `{{${name}}} must have a fallback, e.g. {{${name}|something sensible}}`);
   }
 
   // --- offer facts ---
