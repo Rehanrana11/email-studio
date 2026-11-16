@@ -1,0 +1,40 @@
+{
+  "what": "Lab step 11 practice launch: email 01, one personalized version per group, sent to the Resend emulator.",
+  "run_on": "2026-11-16",
+  "command": "npx -y emulate@0.13.1 start --service resend  &&  node scripts/send-launch.mjs --email 01",
+  "emulator": "emulate@0.13.1 on http://localhost:4000 (local fake; nothing left the machine)",
+  "script_summary": "Verified 3/3 on the emulator; 0 message(s) to non-test addresses.",
+  "note": "'email.delivered' is the emulator's status. It proves the send path and the recipient guard, not real-world deliverability.",
+  "emails": [
+    {
+      "id": "1963683c-71f7-4c3b-9864-eba699ac73bb",
+      "to": [
+        "delivered@resend.dev"
+      ],
+      "from": "Rafi at Clove & Copper <rafi@cloveandcopper.example.com>",
+      "subject": "[curious] Get the pan warm, something new 🌶️",
+      "last_event": "email.delivered",
+      "created_at": "2026-11-16T11:03:35.704Z"
+    },
+    {
+      "id": "73d5bfb5-cdf8-4cbf-9066-fc691b49ea7c",
+      "to": [
+        "delivered@resend.dev"
+      ],
+      "from": "Rafi at Clove & Copper <rafi@cloveandcopper.example.com>",
+      "subject": "[home-cooks] Get the pan warm, something new 🌶️",
+      "last_event": "email.delivered",
+      "created_at": "2026-11-16T11:03:35.725Z"
+    },
+    {
+      "id": "b34c47af-e722-498f-a9a1-fb177eea4276",
+      "to": [
+        "delivered@resend.dev"
+      ],
+      "from": "Rafi at Clove & Copper <rafi@cloveandcopper.example.com>",
+      "subject": "[gifters] Get the pan warm, something new 🌶️",
+      "last_event": "email.delivered",
+      "created_at": "2026-11-16T11:03:35.743Z"
+    }
+  ]
+}
